@@ -29,7 +29,7 @@ const deleteCardById = (req, res) => {
   return Card.deleteOne({ _id: cardId})
     .then((user) => {
       if (!user) {
-       return res.status(404).send({message: "User not found"});
+       return res.status(404).send({message: "Card not found"});
       }
       return res.status(200).send(user);
     })
@@ -38,5 +38,34 @@ const deleteCardById = (req, res) => {
     })
 };
 
+const putLike = (req, res) => Card.findByIdAndUpdate(
+  req.params.cardId,
+  { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+  { new: true },
+)
+  .then((user) => {
+    if (!user) {
+    return res.status(404).send({message: "Card not found"});
+    }
+    return res.status(200).send(user);
+  })
+  .catch(() => {
+    return res.status(500).send({message: "Server Error"});
+  })
 
-module.exports = { createCard, getCards, deleteCardById };
+const deleteLike = (req, res) => Card.findByIdAndUpdate(
+  req.params.cardId,
+  { $pull: { likes: req.user._id } }, // убрать _id из массива
+  { new: true },
+)
+  .then((user) => {
+    if (!user) {
+    return res.status(404).send({message: "Card not found"});
+    }
+    return res.status(200).send(user);
+  })
+  .catch(() => {
+    return res.status(500).send({message: "Server Error"});
+  })
+
+module.exports = { createCard, getCards, deleteCardById, putLike, deleteLike };

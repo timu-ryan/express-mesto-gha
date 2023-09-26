@@ -6,7 +6,7 @@ const { authMiddleware } = require('./middlewares/authMid');
 
 const { PORT = 3000 } = process.env;
 
-mongoose.connect('mongodb://localhost:27017/mydatabase', {
+mongoose.connect('mongodb://localhost:27017/mestodb', {
     useNewUrlParser: true,
 }).then(()=> {
     console.log('connected to db');
