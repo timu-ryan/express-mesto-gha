@@ -12,18 +12,16 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
     console.log('connected to db');
 });
 
-const authMiddleware = (req, res, next) => {
-  // в каждый запрос добавляет объект user
+const app = express();
+app.use(express.json());
+
+app.use((req, res, next) => {
   req.user = {
-    _id: '6512ef92200a52e4fe02b912'
+    _id: '65134af009b09b109914f5c9'
   };
   next();
-}
+});app.use(bodyParser.json());
 
-const app = express();
-app.use(express.json())
-app.use(authMiddleware);
-app.use(bodyParser.json());
 app.use(routes);
 
 app.listen(PORT, () => {
