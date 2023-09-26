@@ -45,11 +45,14 @@ const updateProfile = (req, res) => {
   User.findByIdAndUpdate(req.user._id, newData)
     .then((user) => {
       if (!user) {
-      return res.status(404).send({message: "Запрашиваемый пользователь не найден"});
+        return res.status(404).send({message: "Запрашиваемый пользователь не найден"});
       }
       return res.status(200).send(user);
     })
-    .catch(() => {
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'invalid data' });
+      }
       return res.status(500).send({message: "Server Error"});
     })
 }
@@ -60,11 +63,14 @@ const updateAvatar = (req, res) => {
   User.findByIdAndUpdate(req.user._id, newData)
     .then((user) => {
       if (!user) {
-      return res.status(404).send({message: "Запрашиваемый пользователь не найден"});
+        return res.status(404).send({message: "Запрашиваемый пользователь не найден"});
       }
       return res.status(200).send(user);
     })
-    .catch(() => {
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'invalid data' });
+      }
       return res.status(500).send({message: "Server Error"});
     })
 }

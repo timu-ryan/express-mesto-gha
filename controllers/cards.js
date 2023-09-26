@@ -22,6 +22,7 @@ const getCards = (req, res) => {
     .then((cards) => {
       return res.status(200).send(cards);
     })
+    .catch((err) => res.status(500).send(err));
 };
 
 const deleteCardById = (req, res) => {
@@ -45,11 +46,14 @@ const putLike = (req, res) => Card.findByIdAndUpdate(
 )
   .then((user) => {
     if (!user) {
-    return res.status(404).send({message: "Card not found"});
+      return res.status(404).send({message: "Card not found"});
     }
     return res.status(200).send(user);
   })
-  .catch(() => {
+  .catch((err) => {
+    if (err.name === 'CastError') {
+      return res.status(400).send({ message: 'invalid data' });
+    }
     return res.status(500).send({message: "Server Error"});
   })
 
@@ -60,11 +64,14 @@ const deleteLike = (req, res) => Card.findByIdAndUpdate(
 )
   .then((user) => {
     if (!user) {
-    return res.status(404).send({message: "Card not found"});
+      return res.status(404).send({message: "Card not found"});
     }
     return res.status(200).send(user);
   })
-  .catch(() => {
+  .catch((err) => {
+    if (err.name === 'CastError') {
+      return res.status(400).send({ message: 'invalid data' });
+    }
     return res.status(500).send({message: "Server Error"});
   })
 
