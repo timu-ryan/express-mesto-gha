@@ -1,42 +1,45 @@
-const Card = require("../models/Card");
+const Card = require('../models/Card');
+
+const SUCCESS_CODE = 200;
+const CREATED_CODE = 201;
+const INCORRECT_DATA_ERROR_CODE = 400;
+const NOT_FOUND_ERROR_CODE = 404;
+const SERVER_ERROR_CODE = 500;
 
 const createCard = (req, res) => {
   const newCardData = req.body;
   newCardData.owner = req.user._id;
   return Card.create(newCardData)
-    .then((newCard) => {
-      return res.status(201).send(newCard);
-    })
+    .then((newCard) => res.status(CREATED_CODE).send(newCard))
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        return res.status(400).send({
-          message: `${Object.values(err.errors).map((err) => err.message).join(", ")}`
+      if (err.name === 'ValidationError') {
+        return res.status(INCORRECT_DATA_ERROR_CODE).send({
+          message: `${Object.values(err.errors).map((e) => e.message).join(', ')}`,
         });
       }
-      return res.status(500).send({message: "Server Error"});
-    })
+      return res.status(SERVER_ERROR_CODE).send({ message: 'Server Error' });
+    });
 };
 
-const getCards = (req, res) => {
-  return Card.find({})
-    .then((cards) => {
-      return res.status(200).send(cards);
-    })
-    .catch((err) => res.status(500).send(err));
-};
+const getCards = (req, res) => Card.find({})
+  .then((cards) => res.status(SUCCESS_CODE).send(cards))
+  .catch((err) => res.status(SERVER_ERROR_CODE).send(err));
 
 const deleteCardById = (req, res) => {
   const { cardId } = req.params;
-  return Card.deleteOne({ _id: cardId})
-    .then((user) => {
-      if (!user) {
-       return res.status(404).send({message: "Card not found"});
+  return Card.deleteOne({ _id: cardId })
+    .then((card) => {
+      if (!card) {
+        return res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Card not found' });
       }
-      return res.status(200).send(user);
+      return res.status(SUCCESS_CODE).send(card);
     })
-    .catch(() => {
-      return res.status(500).send({message: "Server Error"});
-    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(INCORRECT_DATA_ERROR_CODE).send({ message: 'invalid data' });
+      }
+      return res.status(SERVER_ERROR_CODE).send({ message: 'Server Error' });
+    });
 };
 
 const putLike = (req, res) => Card.findByIdAndUpdate(
@@ -44,35 +47,37 @@ const putLike = (req, res) => Card.findByIdAndUpdate(
   { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
   { new: true },
 )
-  .then((user) => {
-    if (!user) {
-      return res.status(404).send({message: "Card not found"});
+  .then((card) => {
+    if (!card) {
+      return res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Card not found' });
     }
-    return res.status(200).send(user);
+    return res.status(SUCCESS_CODE).send(card);
   })
   .catch((err) => {
     if (err.name === 'CastError') {
-      return res.status(400).send({ message: 'invalid data' });
+      return res.status(INCORRECT_DATA_ERROR_CODE).send({ message: 'invalid data' });
     }
-    return res.status(500).send({message: "Server Error"});
-  })
+    return res.status(SERVER_ERROR_CODE).send({ message: 'Server Error' });
+  });
 
 const deleteLike = (req, res) => Card.findByIdAndUpdate(
   req.params.cardId,
   { $pull: { likes: req.user._id } }, // убрать _id из массива
   { new: true },
 )
-  .then((user) => {
-    if (!user) {
-      return res.status(404).send({message: "Card not found"});
+  .then((card) => {
+    if (!card) {
+      return res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Card not found' });
     }
-    return res.status(200).send(user);
+    return res.status(SUCCESS_CODE).send(card);
   })
   .catch((err) => {
     if (err.name === 'CastError') {
-      return res.status(400).send({ message: 'invalid data' });
+      return res.status(INCORRECT_DATA_ERROR_CODE).send({ message: 'invalid data' });
     }
-    return res.status(500).send({message: "Server Error"});
-  })
+    return res.status(SERVER_ERROR_CODE).send({ message: 'Server Error' });
+  });
 
-module.exports = { createCard, getCards, deleteCardById, putLike, deleteLike };
+module.exports = {
+  createCard, getCards, deleteCardById, putLike, deleteLike,
+};

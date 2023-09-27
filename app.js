@@ -7,15 +7,15 @@ const routes = require('./routes/index');
 const { PORT = 3000 } = process.env;
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
-    useNewUrlParser: true,
-}).then(()=> {
-    console.log('connected to db');
+  useNewUrlParser: true,
+}).then(() => {
+  console.log('connected to db');
 });
 
 const app = express();
 app.use((req, res, next) => {
   req.user = {
-    _id: '65134af009b09b109914f5c9'
+    _id: '65134af009b09b109914f5c9',
   };
   next();
 });

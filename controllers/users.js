@@ -1,28 +1,28 @@
-const User = require("../models/User");
+const User = require('../models/User');
+
+const SUCCESS_CODE = 200;
+const CREATED_CODE = 201;
+const INCORRECT_DATA_ERROR_CODE = 400;
+const NOT_FOUND_ERROR_CODE = 404;
+const SERVER_ERROR_CODE = 500;
 
 const createUser = (req, res) => {
   const newUserData = req.body;
 
   return User.create(newUserData)
-    .then((newUser) => {
-      return res.status(201).send(newUser);
-    })
+    .then((newUser) => res.status(CREATED_CODE).send(newUser))
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        return res.status(400).send({
-          message: `${Object.values(err.errors).map((err) => err.message).join(", ")}`
+      if (err.name === 'ValidationError') {
+        return res.status(INCORRECT_DATA_ERROR_CODE).send({
+          message: `${Object.values(err.errors).map((e) => e.message).join(', ')}`,
         });
       }
-      return res.status(500).send({message: "Server Error"});
-    })
+      return res.status(SERVER_ERROR_CODE).send({ message: 'Server Error' });
+    });
 };
 
-const getUsers = (req, res) => {
-  return User.find({})
-    .then((users) => {
-      return res.status(200).send(users);
-    })
-};
+const getUsers = (req, res) => User.find({})
+  .then((users) => res.status(SUCCESS_CODE).send(users));
 
 const getUserById = (req, res) => {
   const { userId } = req.params;
@@ -30,49 +30,50 @@ const getUserById = (req, res) => {
   return User.findById(userId)
     .then((user) => {
       if (!user) {
-       return res.status(404).send({message: "Запрашиваемый пользователь не найден"});
+        return res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Запрашиваемый пользователь не найден' });
       }
-      return res.status(200).send(user);
+      return res.status(SUCCESS_CODE).send(user);
     })
-    .catch(() => {
-      return res.status(500).send({message: "Server Error"});
-    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(INCORRECT_DATA_ERROR_CODE).send({ message: 'invalid data' });
+      }
+      return res.status(SERVER_ERROR_CODE).send({ message: 'Server Error' });
+    });
 };
 
 const updateProfile = (req, res) => {
-  const newData = req.body;
-
-  User.findByIdAndUpdate(req.user._id, newData)
+  User.findByIdAndUpdate(req.user._id, req.body, { new: true })
     .then((user) => {
       if (!user) {
-        return res.status(404).send({message: "Запрашиваемый пользователь не найден"});
+        return res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Запрашиваемый пользователь не найден' });
       }
-      return res.status(200).send(user);
+      return res.status(SUCCESS_CODE).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'invalid data' });
+        return res.status(INCORRECT_DATA_ERROR_CODE).send({ message: 'invalid data' });
       }
-      return res.status(500).send({message: "Server Error"});
-    })
-}
+      return res.status(SERVER_ERROR_CODE).send({ message: 'Server Error' });
+    });
+};
 
 const updateAvatar = (req, res) => {
-  const newData = req.body;
-
-  User.findByIdAndUpdate(req.user._id, newData)
+  User.findByIdAndUpdate(req.user._id, req.body, { new: true })
     .then((user) => {
       if (!user) {
-        return res.status(404).send({message: "Запрашиваемый пользователь не найден"});
+        return res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Запрашиваемый пользователь не найден' });
       }
-      return res.status(200).send(user);
+      return res.status(SUCCESS_CODE).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'invalid data' });
+        return res.status(INCORRECT_DATA_ERROR_CODE).send({ message: 'invalid data' });
       }
-      return res.status(500).send({message: "Server Error"});
-    })
-}
+      return res.status(SERVER_ERROR_CODE).send({ message: 'Server Error' });
+    });
+};
 
-module.exports = { createUser, getUsers, getUserById, updateProfile, updateAvatar };
+module.exports = {
+  createUser, getUsers, getUserById, updateProfile, updateAvatar,
+};
