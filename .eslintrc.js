@@ -7,7 +7,6 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
-    'plugin:react/recommended',
     'airbnb-base',
   ],
   overrides: [
@@ -26,10 +25,8 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
   },
-  plugins: [
-    'react',
-  ],
   rules: {
-    'no-underscore-dangle': 'off',
+    'no-console': 'off',
+    'no-underscore-dangle': ['error', { allow: ['_id', '__dirname'] }],
   },
 };

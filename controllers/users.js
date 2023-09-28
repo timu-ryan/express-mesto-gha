@@ -1,10 +1,11 @@
 const User = require('../models/User');
-
-const SUCCESS_CODE = 200;
-const CREATED_CODE = 201;
-const INCORRECT_DATA_ERROR_CODE = 400;
-const NOT_FOUND_ERROR_CODE = 404;
-const SERVER_ERROR_CODE = 500;
+const {
+  SUCCESS_CODE,
+  CREATED_CODE,
+  INCORRECT_DATA_ERROR_CODE,
+  NOT_FOUND_ERROR_CODE,
+  SERVER_ERROR_CODE,
+} = require('../error-codes/errror-codes');
 
 const createUser = (req, res) => {
   const newUserData = req.body;
