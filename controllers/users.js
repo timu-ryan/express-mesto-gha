@@ -25,7 +25,10 @@ const login = (req, res) => {
         'some-secret-key',
         { expiresIn: '7d' },
       );
-      res.send({ token });
+      res
+        .status(SUCCESS_CODE)
+        .cookie('jwt', token, { httpOnly: true })
+        .send({ token });
     })
     .catch(() => {
       throw new UnauthorizedError('Неправильные почта или пароль');
