@@ -6,10 +6,10 @@ const {
   // NOT_FOUND_ERROR_CODE,
   // SERVER_ERROR_CODE,
 } = require('../errors/errror-codes');
-const { NotFoundError } = require('../errors/not-found-err');
-const { InternalServerError } = require('../errors/internal-server-err');
-const { BadRequest } = require('../errors/bad-request');
-const { NoRights } = require('../errors/no-rights-err');
+const NotFoundError = require('../errors/not-found-err');
+const InternalServerError = require('../errors/internal-server-err');
+const BadRequest = require('../errors/bad-request');
+const NoRights = require('../errors/no-rights-err');
 
 const createCard = (req, res, next) => {
   const newCardData = req.body;

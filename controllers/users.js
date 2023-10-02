@@ -10,10 +10,10 @@ const {
   // AUTHORIZATION_ERROR_CODE,
 } = require('../errors/errror-codes');
 // const { UnauthorizedError } = require('../errors/bad-request');
-const { NotFoundError } = require('../errors/not-found-err');
-const { InternalServerError } = require('../errors/internal-server-err');
-const { ConflictError } = require('../errors/conflict-err');
-const { BadRequest } = require('../errors/bad-request');
+const NotFoundError = require('../errors/not-found-err');
+const InternalServerError = require('../errors/internal-server-err');
+const ConflictError = require('../errors/conflict-err');
+const BadRequest = require('../errors/bad-request');
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
