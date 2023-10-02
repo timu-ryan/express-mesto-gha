@@ -9,13 +9,13 @@ const {
   // SERVER_ERROR_CODE,
   // AUTHORIZATION_ERROR_CODE,
 } = require('../errors/errror-codes');
-const { UnauthorizedError } = require('../errors/bad-request');
+// const { UnauthorizedError } = require('../errors/bad-request');
 const { NotFoundError } = require('../errors/not-found-err');
 const { InternalServerError } = require('../errors/internal-server-err');
 const { ConflictError } = require('../errors/conflict-err');
 const { BadRequest } = require('../errors/bad-request');
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -30,9 +30,7 @@ const login = (req, res) => {
         .cookie('jwt', token, { httpOnly: true })
         .send({ token });
     })
-    .catch(() => {
-      throw new UnauthorizedError('Неправильные почта или пароль');
-    });
+    .catch(next);
 };
 
 const createUser = (req, res, next) => {
@@ -43,20 +41,22 @@ const createUser = (req, res, next) => {
     .catch((err) => {
       if (err.code === 11000) {
         next(new ConflictError('Пользователь с таким email уже существует'));
-      }
-      if (err.name === 'ValidationError') {
+      } else if (err.name === 'ValidationError') {
         // return res.status(INCORRECT_DATA_ERROR_CODE).send({
         //   message: `${Object.values(err.errors).map((e) => e.message).join(', ')}`,
         // });
         next(new BadRequest(`${Object.values(err.errors).map((e) => e.message).join(', ')}`));
+      } else {
+        next(err);
       }
       // return res.status(SERVER_ERROR_CODE).send({ message: 'Server Error' });
-      next(new InternalServerError('Server error'));
+      // next(new InternalServerError('Server error'));
     });
 };
 
-const getUsers = (req, res) => User.find({})
-  .then((users) => res.status(SUCCESS_CODE).send(users));
+const getUsers = (req, res, next) => User.find({})
+  .then((users) => res.status(SUCCESS_CODE).send(users))
+  .catch(() => next(new InternalServerError('Server Error')));
 
 const getUserById = (req, res, next) => {
   const { userId } = req.params;
@@ -74,14 +74,17 @@ const getUserById = (req, res, next) => {
       if (err.name === 'CastError') {
         // return res.status(INCORRECT_DATA_ERROR_CODE).send({ message: 'invalid data' });
         next(new BadRequest('invalid data'));
+      } else {
+        next(err);
       }
       // return res.status(SERVER_ERROR_CODE).send({ message: 'Server Error' });
-      next(new InternalServerError('Server error'));
+      // next(new InternalServerError('Server error'));
     });
 };
 
-const getMyProfile = (req, res) => User.findById(req.user._id)
-  .then((myProfile) => res.status(SUCCESS_CODE).send(myProfile));
+const getMyProfile = (req, res, next) => User.findById(req.user._id)
+  .then((myProfile) => res.status(SUCCESS_CODE).send(myProfile))
+  .catch(() => next(new InternalServerError('Server Error')));
 
 const updateProfile = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, req.body, { new: true })
@@ -97,9 +100,11 @@ const updateProfile = (req, res, next) => {
       if (err.name === 'ValidationError') {
         // return res.status(INCORRECT_DATA_ERROR_CODE).send({ message: 'invalid data' });
         next(new BadRequest('invalid data'));
+      } else {
+        next(err);
       }
       // return res.status(SERVER_ERROR_CODE).send({ message: 'Server Error' });
-      next(new InternalServerError('Server error'));
+      // next(new InternalServerError('Server error'));
     });
 };
 
@@ -117,9 +122,11 @@ const updateAvatar = (req, res, next) => {
       if (err.name === 'ValidationError') {
         // return res.status(INCORRECT_DATA_ERROR_CODE).send({ message: 'invalid data' });
         next(new BadRequest('invalid data'));
+      } else {
+        next(err);
       }
       // return res.status(SERVER_ERROR_CODE).send({ message: 'Server Error' });
-      next(new InternalServerError('Server error'));
+      // next(new InternalServerError('Server error'));
     });
 };
 

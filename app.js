@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const routes = require('./routes/index');
+const { errorCatchMiddleware } = require('./middlewares/catchErrors');
 // const { authMiddleware } = require('./middlewares/authMid');
 
 const { PORT = 3000 } = process.env;
@@ -23,19 +24,7 @@ app.use(bodyParser.json());
 
 app.use(routes);
 
-app.use((err, req, res) => {
-  // если у ошибки нет статуса, выставляем 500
-  const { statusCode = 500, message } = err;
-
-  res
-    .status(statusCode)
-    .send({
-      // проверяем статус и выставляем сообщение в зависимости от него
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
-});
+app.use(errorCatchMiddleware);
 
 app.listen(PORT, () => {
   console.log(`server is running on port ${PORT}`);
