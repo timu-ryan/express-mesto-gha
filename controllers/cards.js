@@ -21,7 +21,8 @@ const createCard = (req, res, next) => {
         // return res.status(INCORRECT_DATA_ERROR_CODE).send({
         //   message: `${Object.values(err.errors).map((e) => e.message).join(', ')}`,
         // });
-        next(new BadRequest(`${Object.values(err.errors).map((e) => e.message).join(', ')}`));
+        // next(new BadRequest(`${Object.values(err.errors).map((e) => e.message).join(', ')}`));
+        next(new BadRequest('invalid data'));
       } else {
         next(err);
       }
