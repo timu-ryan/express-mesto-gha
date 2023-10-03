@@ -27,7 +27,7 @@ const login = (req, res, next) => {
       );
       res
         .status(SUCCESS_CODE)
-        .cookie('jwt', token, { httpOnly: true })
+        // .cookie('jwt', token, { httpOnly: true })
         .send({ token });
     })
     .catch(next);
@@ -37,7 +37,11 @@ const createUser = (req, res, next) => {
   const newUserData = req.body;
   bcrypt.hash(newUserData.password, 10)
     .then((hash) => User.create({ ...newUserData, password: hash }))
-    .then((newUser) => res.status(CREATED_CODE).send(newUser))
+    .then(({
+      name, about, avatar, email,
+    }) => res.status(CREATED_CODE).send({
+      name, about, avatar, email,
+    }))
     .catch((err) => {
       if (err.code === 11000) {
         next(new ConflictError('Пользователь с таким email уже существует'));

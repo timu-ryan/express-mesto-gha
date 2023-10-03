@@ -9,6 +9,6 @@ module.exports.errorCatchMiddleware = (err, req, res, next) => {
       message: statusCode === 500
         ? 'На сервере произошла ошибка'
         : message,
-    })
-    .catch(next);
+    });
+  next();
 };

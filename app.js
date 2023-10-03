@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 const routes = require('./routes/index');
 const { errorCatchMiddleware } = require('./middlewares/catchErrors');
 // const { authMiddleware } = require('./middlewares/authMid');
@@ -23,7 +24,7 @@ const app = express();
 app.use(bodyParser.json());
 
 app.use(routes);
-
+app.use(errors());
 app.use(errorCatchMiddleware);
 
 app.listen(PORT, () => {

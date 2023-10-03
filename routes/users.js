@@ -12,13 +12,13 @@ const linkRegEx = require('../utils/regularEspresions');
 
 router.get('/', auth, getUsers);
 
+router.get('/me', auth, getMyProfile);
+
 router.get('/:userId', auth, celebrate({
   params: Joi.object().keys({
     userId: Joi.string().required().hex().length(24),
   }),
 }), getUserById);
-
-router.get('/me', auth, getMyProfile);
 
 router.patch('/me', auth, celebrate({
   body: Joi.object().keys({
