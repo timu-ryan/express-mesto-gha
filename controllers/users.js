@@ -61,7 +61,8 @@ const createUser = (req, res, next) => {
 
 const getUsers = (req, res, next) => User.find({})
   .then((users) => res.status(SUCCESS_CODE).send(users))
-  .catch(() => next(new InternalServerError('Server Error')));
+  .catch(next);
+  // .catch(() => next(new InternalServerError('Server Error')));
 
 const getUserById = (req, res, next) => {
   const { userId } = req.params;
